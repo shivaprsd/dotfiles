@@ -1,0 +1,174 @@
+" General options {{{
+set hidden		" keep unsaved buffers
+set showcmd		" show incomplete commands
+set number		" show line numbers
+set relativenumber	" sets for current line only
+set wildmenu		" show cmd completion menu
+set scrolloff=4		" lines around cursor
+set laststatus=2	" always show statusline
+set modelines=1		" override system settings!
+set shortmess+=aF	" hide, abbreviate file info
+set fillchars+=vert:│	" use longer bar for vsplits
+" }}}
+
+" Set code indentation & highlight {{{
+filetype plugin indent on
+syntax enable
+" Update colours if inside tmux; env might have changed after a `tmux attach'
+if !empty($TMUX)
+	let $TERM_PROFILE=system("t=`tmux showenv TERM_PROFILE`; echo -n ${t#*=}")
+	let $COLORFGBG=system("c=`tmux showenv COLORFGBG`; echo -n ${c#*=}")
+	set background&
+endif
+" Match colours to the current Terminal profile
+colorscheme $TERM_PROFILE
+
+" Declare /bin/sh as POSIX-compliant (removes erroneous hightlightings)
+let g:is_posix=1
+" Set Fortran free-form formatting
+let fortran_free_source=1
+" }}}
+
+" Buffers and Windows {{{
+" Show buffer list and wait for me to choose
+nnoremap <Leader>b :ls<CR>:b<Space>
+" Saner windowing defaults
+set splitbelow
+set splitright
+set winminheight=0
+" Moving between windows
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+" Maximize, miNimise, resize:80 col, swaP
+nnoremap <C-m> <C-w>_<C-w>\|
+nnoremap <C-w>8 <C-w>80\|
+nnoremap <C-n> <C-w>=
+nnoremap <C-p> <C-w>x
+" }}}
+
+" Searching {{{
+" Search as I type, highlight line of next/previous match,
+" But don't underline linenumber, de-highlight on pressing Space
+set incsearch
+hi CursorLineNr cterm=none
+nnoremap <silent> n :set cul<CR>n
+nnoremap <silent> N :set cul<CR>N
+nnoremap <silent> <space> :set nocul<CR><space>
+" }}}
+
+" Autocommands and toggles {{{
+augroup vimrc | autocmd! | augroup END
+" Set space indentation for Python & HTML
+autocmd vimrc FileType python setlocal tabstop=4 shiftwidth=4 expandtab
+autocmd vimrc FileType html,javascript,css setl tabstop=2 shiftwidth=2 expandtab "hoe
+" Remember last cursor position in file
+autocmd vimrc BufReadPost *
+	\ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# "commit"
+	\ | exe "normal! g`\""
+	\ | endif
+" Mark the 80 chars limit
+hi ColEighty cterm=reverse ctermfg=13
+autocmd vimrc BufEnter * 2match ColEighty "\%81v."
+" Highlight the char under cursor for readability
+autocmd vimrc CursorMoved,CmdlineLeave * match Cursor "\%#\S"
+autocmd vimrc InsertEnter,CmdlineEnter,WinLeave * match none | redraw
+
+" Mode-aware cursor
+let &t_SI="\e[6 q"
+let &t_EI="\e[2 q"
+let &t_SR="\e[4 q"
+" }}}
+
+" Statusline construction {{{
+function s:ActiveWin()
+	return g:statusline_winid == win_getid(winnr()) ? v:true : v:false
+endf
+function s:RArr(beg)
+	return xor(s:ActiveWin(), a:beg) ? "" : " » "
+endfunction
+function s:LArr(beg)
+	return xor(s:ActiveWin(), a:beg) ? " « " : ""
+endfunction
+
+function MakeStl()
+	let l:stl =&nu?"%1*%3c\ ":""	"User1: character column
+	let l:stl.="%2*".s:RArr(1)	"User2: active arrows
+	let l:stl.="%4*".s:LArr(1)	"User4: inactive arrows
+	let l:stl.="%3*%<%f%*"		"User3: relative filepath
+	let l:stl.="%2*".s:LArr(0)
+	let l:stl.="%4*".s:RArr(0)
+	if s:ActiveWin()
+		let l:stl.="%5*".(&paste?"P":"")
+		let l:stl.="%M%*%="		"User5: flags
+		let l:stl.="%-6(%2*⇥\ %7*%v%)"	"User7: right status
+		let l:stl.="%-4(%6*#%n%)"	"User6: buffer no.
+		let l:stl.="%7*%P\ %*"
+	endif
+	return l:stl
+endfunction
+set statusline=%!MakeStl()
+" }}}
+
+" Colorscheme tweaks {{{
+hi StatusLine cterm=bold
+hi StatusLineNC cterm=none
+" Solarized {{{
+if g:colors_name ==# "solarized"
+	hi Folded cterm=bold
+	hi User1 cterm=bold ctermfg=4
+	if &background ==# "dark"
+		hi User2 cterm=bold ctermfg=6 ctermbg=0
+		hi User3 cterm=bold ctermfg=11 ctermbg=0
+		hi User4 cterm=bold ctermfg=14 ctermbg=0
+		hi User5 cterm=bold ctermfg=1 ctermbg=0
+		hi User6 ctermfg=5 ctermbg=0
+		hi User7 ctermbg=0
+	else
+		hi User2 cterm=bold ctermfg=6 ctermbg=7
+		hi User3 cterm=bold ctermfg=12 ctermbg=7
+		hi User4 cterm=bold ctermfg=10 ctermbg=7
+		hi User5 cterm=bold ctermfg=1 ctermbg=7
+		hi User6 ctermfg=5 ctermbg=7
+		hi User7 ctermbg=7
+	endif
+" }}}
+" Smyck {{{
+elseif g:colors_name ==# "smyck"
+	hi Cursor ctermfg=15 ctermbg=6
+	hi User1 cterm=bold ctermfg=4 ctermbg=236
+	hi User2 cterm=bold ctermfg=6 ctermbg=0
+	hi User3 cterm=bold ctermfg=7 ctermbg=0
+	hi User4 cterm=bold ctermfg=7 ctermbg=0
+	hi User5 cterm=bold ctermfg=1 ctermbg=0
+	hi User6 ctermfg=13 ctermbg=0
+	hi User7 ctermfg=7 ctermbg=0
+" }}}
+" Nord or OneHalf {{{
+else
+	if g:colors_name ==# "nord" | hi Cursor cterm=reverse | endif
+	hi Folded cterm=none ctermfg=3
+	hi User1 cterm=bold ctermfg=6 ctermbg=8
+	hi User2 cterm=bold ctermfg=4 ctermbg=8
+	hi User3 cterm=bold ctermfg=7 ctermbg=8
+	hi User4 cterm=bold ctermfg=7 ctermbg=8
+	hi User5 cterm=bold ctermfg=3 ctermbg=8
+	hi User6 ctermfg=7 ctermbg=8
+	hi User7 ctermfg=2 ctermbg=8
+endif
+" }}}
+" }}}
+
+" Misc. {{{
+" Reload configuration
+nnoremap <silent> <Leader>r :so $MYVIMRC<CR>:echo "VIMRC reloaded"<CR>
+" Switch dark/light background
+nnoremap <silent> <Leader>c :let &bg=(&bg == "dark" ? "light" : "dark")<CR>
+" Normal backspacing
+set backspace=indent,eol,start
+" Viminfo file is like a cache
+set viminfofile=$XDG_CACHE_HOME/viminfo
+" }}}
+
+" vim:foldmethod=marker:foldlevel=0

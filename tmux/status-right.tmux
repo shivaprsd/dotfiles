@@ -43,8 +43,6 @@ separator() {
 	echo -n '#[default,fg=default] ⋮ '
 }
 
-# Placeholder to reduce flickering
-echo '00 Day 00:00 ⋮ 00↑ ⌁100% '
 # $1 => status extra; $2 => bright colors or not
 date_time $2
 if [ "$1" = 'on' ]; then

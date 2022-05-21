@@ -6,13 +6,11 @@ select-word-style bash
 zle -N up-line-or-beginning-search
 zle -N down-line-or-beginning-search
 
-bindkey -v '^?' backward-delete-char
-bindkey -v '^W' backward-kill-word
-bindkey -v '^[b' backward-word
-bindkey -v '^[f' forward-word
-bindkey -v '^[[Z' reverse-menu-complete
-bindkey -v '^[[A' up-line-or-beginning-search
-bindkey -v '^[[B' down-line-or-beginning-search
+bindkey -e
+bindkey -e '^[[3~' delete-char
+bindkey -e '^[[Z' reverse-menu-complete
+bindkey -e '^[[A' up-line-or-beginning-search
+bindkey -e '^[[B' down-line-or-beginning-search
 # }}}
 
 # History {{{
@@ -21,6 +19,7 @@ setopt hist_expire_dups_first
 setopt hist_ignore_dups
 setopt hist_ignore_space
 setopt hist_save_no_dups
+setopt share_history
 # }}}
 
 # Completion: options {{{
@@ -31,7 +30,7 @@ _comp_options+=(globdots)
 setopt auto_cd
 setopt complete_in_word
 # setopt extended_glob; unsetopt nomatch
-setopt menu_complete
+# setopt menu_complete
 # setopt path_dirs
 unsetopt case_glob
 # }}}
@@ -62,18 +61,12 @@ zstyle ':completion:*:warnings' format ' %F{red}-- no matches found --%f'
 # }}}
 
 # Prompt & scripts {{{
-setopt prompt_subst
-PROMPT='%F{magenta}%1~%f %F{%(?.yellow.red)}${PROMPT_SYM}%f '
-# Reverse prompt symbol on mode change
-function zle-keymap-select zle-line-init {
-	PROMPT_SYM=${${KEYMAP/vicmd/❮}/(main|viins)/❯}
-	zle reset-prompt
-}
-zle -N zle-keymap-select
-zle -N zle-line-init
+PROMPT='%F{magenta}%1~%f %F{%(?.yellow.red)}❯%f '
 
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets cursor)
 for script in "$ZDOTDIR"/scripts/*.zsh; do . "$script"; done
+
+stty -ixon
 # }}}
 
 # vim:foldmethod=marker:foldlevel=0

@@ -25,44 +25,52 @@ colorscheme $TERM_PROFILE
 
 " Declare /bin/sh as POSIX-compliant (removes erroneous hightlightings)
 let g:is_posix=1
+" Rainbow parenthesis in Lisp code
+let g:lisp_rainbow=1
 " Set Fortran free-form formatting
 let fortran_free_source=1
 " }}}
 
 " Buffers and Windows {{{
 " Show buffer list and wait for me to choose
-nnoremap <Leader>b :ls<CR>:b<Space>
+"nnoremap <Leader>b :ls<CR>:b<Space>
 " Saner windowing defaults
 set splitbelow
 set splitright
 set winminheight=0
 " Moving between windows
-nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
-nnoremap <C-l> <C-w>l
-" Maximize, miNimise, resize:80 col, swaP
-nnoremap <C-m> <C-w>_<C-w>\|
+nnoremap <C-w><C-m> <C-w>l
+" Equalize, resize:80 col
+nnoremap <C-w><C-e> <C-w>=
 nnoremap <C-w>8 <C-w>80\|
-nnoremap <C-n> <C-w>=
-nnoremap <C-p> <C-w>x
 " }}}
 
 " Searching {{{
 " Search as I type, highlight line of next/previous match,
 " But don't underline linenumber, de-highlight on pressing Space
 set incsearch
+set hlsearch
 hi CursorLineNr cterm=none
 nnoremap <silent> n :set cul<CR>n
 nnoremap <silent> N :set cul<CR>N
-nnoremap <silent> <space> :set nocul<CR><space>
+nnoremap <silent> <space> :set nocul<CR>:noh<CR><space>
 " }}}
 
 " Autocommands and toggles {{{
 augroup vimrc | autocmd! | augroup END
+" Refresh syntax highlighting after reloading config
+autocmd vimrc SourcePost $MYVIMRC doautocmd Syntax
+" Auto pair braces and enter block in C
+autocmd vimrc FileType c inoremap { {<CR>}<Up><C-o>$
+" Auto pair parens and enter sexpr in Lisp, input actual Tabs
+" Then make if-args line up, set space indentation & level
+autocmd vimrc FileType lisp inoremap ( ()<Left>| inoremap <Tab> <C-v><Tab>
+autocmd vimrc FileType lisp setl lispwords-=if tabstop=4 shiftwidth=2 expandtab
 " Set space indentation for Python & HTML
 autocmd vimrc FileType python setlocal tabstop=4 shiftwidth=4 expandtab
-autocmd vimrc FileType html,javascript,css setl tabstop=2 shiftwidth=2 expandtab "hoe
+au vimrc FileType html,javascript,json,css setl tabstop=2 shiftwidth=2 expandtab
 " Remember last cursor position in file
 autocmd vimrc BufReadPost *
 	\ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# "commit"
@@ -79,6 +87,9 @@ autocmd vimrc InsertEnter,CmdlineEnter,WinLeave * match none | redraw
 let &t_SI="\e[6 q"
 let &t_EI="\e[2 q"
 let &t_SR="\e[4 q"
+
+let &t_ZH="\e[3m"
+let &t_ZR="\e[23m"
 " }}}
 
 " Statusline construction {{{
@@ -161,10 +172,19 @@ endif
 " }}}
 
 " Misc. {{{
+" No chording for cmdline mode
+noremap ; :
+noremap l ;
+" Jump to mark position more often
+noremap ' `
+noremap ` '
 " Reload configuration
-nnoremap <silent> <Leader>r :so $MYVIMRC<CR>:echo "VIMRC reloaded"<CR>
+nnoremap <silent> <Leader>\ :so $MYVIMRC<CR>:echo "VIMRC reloaded"<CR>
 " Switch dark/light background
-nnoremap <silent> <Leader>c :let &bg=(&bg == "dark" ? "light" : "dark")<CR>
+" nnoremap <silent> <Leader>c :let &bg=(&bg == "dark" ? "light" : "dark")<CR>
+" Quickly move left & right in Insert mode
+inoremap <C-b> <Left>
+inoremap <C-l> <Right>
 " Normal backspacing
 set backspace=indent,eol,start
 " Viminfo file is like a cache

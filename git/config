@@ -21,12 +21,12 @@
 	ca = commit --amend # careful
 	ac = !git add . && git commit
 	acm = !git add . && git commit -m
-	l = log --graph --all --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(white)- %an, %ar%Creset'
+	l = log --graph --all --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(12)- %ar%Creset'
 	ll = log --stat --abbrev-commit
 	lg = log --color --graph --pretty=format:'%C(bold white)%h%Creset -%C(bold green)%d%Creset %s %C(bold green)(%cr)%Creset %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
 	llg = log --color --graph --pretty=format:'%C(bold white)%H %d%Creset%n%s%n%+b%C(bold blue)%an <%ae>%Creset %C(bold green)%cr (%ci)' --abbrev-commit
 	d = diff
-	master = checkout master
+	main = checkout main
 	spull = svn rebase
 	spush = svn dcommit
 	alias = !git config --list | grep 'alias\\.' | sed 's/alias\\.\\([^=]*\\)=\\(.*\\)/\\1\\\t => \\2/' | sort
@@ -60,8 +60,13 @@
 	branch = false
 [alias]
 	b = branch
+	sh = show
+	st = stash
 	ck = checkout
+	sm = submodule
 	ss = status -sb -uno
 	dc = diff --cached
 	sc = clone --depth=1 --single-branch
-	wd = -c color.diff.new='black green' diff --color-words='[^[:space:]]|([[:alnum:]]|UTF_8_GUARD)+'
+	lm = log --format='%C(auto) %h %s'
+	dd = -c color.diff.new='black green' diff --color-words='[^[:space:]]|([[:alnum:]]|UTF_8_GUARD)+'
+	ddc = dd --cached

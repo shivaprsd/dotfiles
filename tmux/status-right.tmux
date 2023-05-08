@@ -30,7 +30,7 @@ date_time() {
 
 disk_free() {
 	echo -n "#[default,fg=$1magenta]\
-	$(df -H | grep '/dev' | awk 'NR==1{print $4 "B #[reverse]⋯" $5}') "
+	$(df -H | grep '/dev' | awk 'END{print $4 "B #[reverse]⋯" $5}') "
 }
 
 load_avg() {
@@ -45,10 +45,5 @@ separator() {
 
 # $1 => status extra; $2 => bright colors or not
 date_time $2
-if [ "$1" = 'on' ]; then
-	separator
-	disk_free $2
-	load_avg $2
-fi
 separator
-battery_stat $2
+disk_free $2

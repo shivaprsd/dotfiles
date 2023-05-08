@@ -14,14 +14,7 @@ set fillchars+=vert:│	" use longer bar for vsplits
 " Set code indentation & highlight {{{
 filetype plugin indent on
 syntax enable
-" Update colours if inside tmux; env might have changed after a `tmux attach'
-if !empty($TMUX)
-	let $TERM_PROFILE=system("t=`tmux showenv TERM_PROFILE`; echo -n ${t#*=}")
-	let $COLORFGBG=system("c=`tmux showenv COLORFGBG`; echo -n ${c#*=}")
-	set background&
-endif
-" Match colours to the current Terminal profile
-colorscheme $TERM_PROFILE
+colorscheme smyck
 
 " Declare /bin/sh as POSIX-compliant (removes erroneous hightlightings)
 let g:is_posix=1
@@ -80,8 +73,8 @@ autocmd vimrc BufReadPost *
 hi ColEighty cterm=reverse ctermfg=13
 autocmd vimrc BufEnter * 2match ColEighty "\%81v."
 " Highlight the char under cursor for readability
-autocmd vimrc CursorMoved,CmdlineLeave * match Cursor "\%#\S"
-autocmd vimrc InsertEnter,CmdlineEnter,WinLeave * match none | redraw
+"autocmd vimrc CursorMoved,CmdlineLeave * match Cursor "\%#\S"
+"autocmd vimrc InsertEnter,CmdlineEnter,WinLeave * match none | redraw
 
 " Mode-aware cursor
 let &t_SI="\e[6 q"

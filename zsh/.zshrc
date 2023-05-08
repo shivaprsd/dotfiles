@@ -15,6 +15,8 @@ bindkey -e '^[[B' down-line-or-beginning-search
 
 # History {{{
 HISTFILE="$XDG_CACHE_HOME/zhistory"
+HISTSIZE=200
+SAVEHIST=2000
 setopt hist_expire_dups_first
 setopt hist_ignore_dups
 setopt hist_ignore_space
@@ -32,7 +34,7 @@ setopt complete_in_word
 # setopt extended_glob; unsetopt nomatch
 # setopt menu_complete
 # setopt path_dirs
-unsetopt case_glob
+# unsetopt case_glob
 # }}}
 
 # Completion: styles {{{

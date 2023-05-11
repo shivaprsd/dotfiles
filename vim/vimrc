@@ -42,13 +42,13 @@ nnoremap <C-w>8 <C-w>80\|
 
 " Searching {{{
 " Search as I type, highlight line of next/previous match,
-" But don't underline linenumber, de-highlight on pressing Space
+" But don't underline linenumber, de-highlight on pressing Esc
 set incsearch
 set hlsearch
 hi CursorLineNr cterm=none
 nnoremap <silent> n :set cul<CR>n
 nnoremap <silent> N :set cul<CR>N
-nnoremap <silent> <space> :set nocul<CR>:noh<CR><space>
+nnoremap <silent> <esc> :set nocul<CR>:noh<CR><esc>
 " }}}
 
 " Autocommands and toggles {{{

@@ -64,6 +64,7 @@ zstyle ':completion:*:warnings' format ' %F{red}-- no matches found --%f'
 
 # Prompt & scripts {{{
 PROMPT='%F{magenta}%1~%f %F{%(?.yellow.red)}❯%f '
+clear && macchina --theme Lithium
 
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets cursor)
 for script in "$ZDOTDIR"/scripts/*.zsh; do . "$script"; done
